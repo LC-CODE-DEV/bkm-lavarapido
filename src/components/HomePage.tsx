@@ -1,111 +1,227 @@
-"use client"
+"use client";
 
-import { useState } from 'react';
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Car, Droplets, Sparkles, Shield, Clock, MapPin, Phone, Star, CheckCircle } from "lucide-react"
-import { Instagram, MessageCircle, X } from "lucide-react"  // Importa ícone de fechar
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMotorcycle } from '@fortawesome/free-solid-svg-icons';
-import Image from "next/image"
-import Link from "next/link"
-import { Menu } from 'lucide-react'; // Ícone do menu (hamburger)
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Car,
+  Droplets,
+  Sparkles,
+  Shield,
+  Clock,
+  MapPin,
+  Phone,
+  Star,
+  CheckCircle,
+  Menu,
+  X,
+  Instagram,
+  MessageCircle,
+} from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMotorcycle } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showPriceModal, setShowPriceModal] = useState(false); // Estado para modal
+  const [showPriceModal, setShowPriceModal] = useState(false);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = () => setMenuOpen((v) => !v);
+  const closeMenu = () => setMenuOpen(false);
+  const openPriceModal = () => setShowPriceModal(true);
+  const closePriceModal = () => setShowPriceModal(false);
 
-  const closeMenu = () => {
-    setMenuOpen(false);
-  };
+  // BLOQUEIO de scroll quando menu abre
+  useEffect(() => {
+    const body = document.body;
+    const html = document.documentElement;
 
-  // Abre o modal
-  const openPriceModal = () => {
-    setShowPriceModal(true);
-  };
+    if (menuOpen) {
+      const scrollY = window.scrollY;
+      body.style.position = "fixed";
+      body.style.top = `-${scrollY}px`;
+      body.style.left = "0";
+      body.style.right = "0";
+      body.style.width = "100%";
+      body.style.overflow = "hidden";
+      html.style.overscrollBehavior = "none";
+      html.style.touchAction = "none";
+    } else {
+      const y = -parseInt(body.style.top || "0", 10) || 0;
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.width = "";
+      body.style.overflow = "";
+      html.style.overscrollBehavior = "";
+      html.style.touchAction = "";
+      if (y) window.scrollTo(0, y);
+    }
 
-  // Fecha o modal
-  const closePriceModal = () => {
-    setShowPriceModal(false);
-  };
+    return () => {
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.width = "";
+      body.style.overflow = "";
+      html.style.overscrollBehavior = "";
+      html.style.touchAction = "";
+    };
+  }, [menuOpen]);
 
   return (
     <div className="min-h-screen bg-white relative">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Image
-                src="/imagens/bkm-logo.png"
-                alt="Logo BKM"
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-              <div className="flex flex-col items-start leading-tight">
-                <h1 className="text-2xl font-bold text-blue-600">BKM</h1>
-                <p className="text-xs text-gray-600 whitespace-nowrap">Lava Rápido</p>
+      {/* HERO */}
+      <section className="bg-gradient-to-br from-blue-50 to-blue-100 pt-0 pb-16">
+        <div className="container mx-auto px-4">
+          {/* TOPBAR (desktop: logo esq / nav centro | mobile: menu esq / logo dir) */}
+          <div className="relative h-16">
+            {/* MOBILE: menu à ESQUERDA, logo à DIREITA */}
+            <div className="flex md:hidden items-center justify-between h-16">
+              {/* Botão menu (esquerda) */}
+              {!menuOpen ? (
+                <button
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  onClick={() => setMenuOpen(true)}
+                  aria-label="Abrir menu"
+                >
+                  <Menu className="h-6 w-6" />
+                </button>
+              ) : (
+                <button
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Fechar menu"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              )}
+
+              {/* Logo (direita) */}
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/imagens/bkm-logo.png"
+                  alt="Logo BKM"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 object-contain"
+                />
+                <div className="flex flex-col justify-center leading-none">
+                  <span className="text-2xl font-bold text-blue-600 leading-none">
+                    BKM
+                  </span>
+                  <span className="text-xs text-gray-600 whitespace-nowrap leading-none">
+                    Lava Rápido
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Menu de navegação responsivo */}
-            <div className="hidden md:flex space-x-6 justify-center w-full">
-              <Link href="#servicos" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Serviços
-              </Link>
-              <Link href="#sobre" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Sobre
-              </Link>
-              <Link href="#contato" className="text-gray-700 hover:text-blue-600 transition-colors">
-                Contato
-              </Link>
-            </div>
-
-            {/* Menu suspenso para dispositivos móveis */}
-            <div className="md:hidden">
-              <button className="text-gray-700 hover:text-blue-600 transition-colors" onClick={toggleMenu}>
-                <Menu className="h-6 w-6" />
-              </button>
-              {menuOpen && (
-                <div className="flex flex-col space-y-4 mt-2">
-                  <Link href="#servicos" className="text-gray-700 hover:text-blue-600 transition-colors" onClick={closeMenu}>
-                    Serviços
-                  </Link>
-                  <Link href="#sobre" className="text-gray-700 hover:text-blue-600 transition-colors" onClick={closeMenu}>
-                    Sobre
-                  </Link>
-                  <Link href="#contato" className="text-gray-700 hover:text-blue-600 transition-colors" onClick={closeMenu}>
-                    Contato
-                  </Link>
+            {/* DESKTOP: logo à ESQUERDA, nav CENTRALIZADO */}
+            <div className="hidden md:block">
+              {/* Logo esquerda */}
+              <div className="absolute inset-y-0 left-0 flex items-center gap-2">
+                <Image
+                  src="/imagens/bkm-logo.png"
+                  alt="Logo BKM"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 object-contain"
+                />
+                <div className="flex flex-col justify-center leading-none">
+                  <span className="text-2xl font-bold text-blue-600 leading-none">
+                    BKM
+                  </span>
+                  <span className="text-xs text-gray-600 whitespace-nowrap leading-none">
+                    Lava Rápido
+                  </span>
                 </div>
-              )}
+              </div>
+
+              {/* Nav central (em negrito) */}
+              <nav className="hidden md:flex items-center gap-8 h-16 absolute left-1/2 -translate-x-1/2 font-bold">
+                <Link
+                  href="#servicos"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Serviços
+                </Link>
+                <Link
+                  href="#sobre"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Sobre
+                </Link>
+                <Link
+                  href="#contato"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Contato
+                </Link>
+              </nav>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-blue-100 py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Dropdown mobile logo abaixo da topbar */}
+          {menuOpen && (
+            <div className="w-full bg-white shadow-lg border rounded-xl mt-4 md:hidden">
+              <div className="flex flex-col items-center space-y-4 py-6">
+                <Link
+                  href="#servicos"
+                  className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
+                  onClick={closeMenu}
+                >
+                  Serviços
+                </Link>
+                <Link
+                  href="#sobre"
+                  className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
+                  onClick={closeMenu}
+                >
+                  Sobre
+                </Link>
+                <Link
+                  href="#contato"
+                  className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
+                  onClick={closeMenu}
+                >
+                  Contato
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Conteúdo da HERO */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-8">
+            {/* Coluna esquerda */}
             <div>
               <Badge className="mb-5 bg-blue-100 text-blue-800 hover:bg-blue-100 inline-flex items-center px-2 py-1 rounded-md">
                 <Sparkles className="h-3 w-3 mr-2" />
                 Qualidade Premium
               </Badge>
+
               <h1 className="text-4xl sm:text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-                Seu carro <span className="text-blue-600">brilhando</span><br />em minutos
+                Seu carro <span className="text-blue-600">brilhando</span>
+                <br />
+                em minutos
               </h1>
+
               <p className="text-xl text-gray-900 mb-8 leading-relaxed">
-                No BKM Lava Rápido, cuidamos do seu veículo com a qualidade e agilidade que você merece. Serviços
-                profissionais com produtos de primeira linha.
+                No BKM Lava Rápido, cuidamos do seu veículo com a qualidade e
+                agilidade que você merece. Serviços profissionais com produtos
+                de primeira linha.
               </p>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="https://wa.me/5511968369512?text=Ol%C3%A1%2C%20quero%20agendar%20um%20servi%C3%A7o"
@@ -113,7 +229,10 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto"
                 >
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                  >
                     <Car className="h-5 w-5 mr-2" />
                     Agendar Serviços
                   </Button>
@@ -123,12 +242,14 @@ export default function HomePage() {
                   size="lg"
                   variant="outline"
                   className="border-blue-600 text-blue-600 hover:bg-blue-50 bg-transparent w-full sm:w-auto"
-                  onClick={openPriceModal} // Abre o modal ao clicar
+                  onClick={openPriceModal}
                 >
                   Ver Preços
                 </Button>
               </div>
             </div>
+
+            {/* Coluna direita */}
             <div className="relative">
               <Image
                 src="/imagens/bkm-1imagem.png"
@@ -136,7 +257,7 @@ export default function HomePage() {
                 width={350}
                 height={10}
                 className="rounded-2xl shadow-2xl w-full max-w-[350px] mx-auto md:ml-[20%]"
-                style={{ position: 'relative' }}
+                style={{ position: "relative" }}
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg">
                 <div className="flex items-center space-x-3">
@@ -177,13 +298,18 @@ export default function HomePage() {
       )}
 
       {/* Serviços */}
-      <section id="servicos" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-00">Nossos Serviços</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Cuidado completo para seu veículo</h2>
+      <section id="servicos" className="py-11 bg-white"> {/* antes era py-20 */}
+        <div className="container mx-auto px-4 ">
+          <div className="text-center mb-12"> {/* antes era mb-16 */}
+            <Badge className="mb-2 bg-blue-100 text-blue-800 font-bold hover:bg-blue-100">
+              Nossos Serviços
+            </Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 py-4">
+              Cuidado completo para seu veículo
+            </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Oferecemos uma gama completa de serviços para manter seu carro sempre impecável
+              Oferecemos uma gama completa de serviços para manter seu carro
+              sempre impecável
             </p>
           </div>
 
@@ -194,7 +320,9 @@ export default function HomePage() {
                   <Droplets className="h-6 w-6 text-blue-600" />
                 </div>
                 <CardTitle className="text-xl">Lavagem Simples</CardTitle>
-                <CardDescription>Lavagem externa completa com produtos de qualidade</CardDescription>
+                <CardDescription>
+                  Lavagem externa completa com produtos de qualidade
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 mb-4">
@@ -211,9 +339,6 @@ export default function HomePage() {
                     Pneus e rodas
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-blue-600">R$ 30</span>
-                </div>
               </CardContent>
             </Card>
 
@@ -223,7 +348,9 @@ export default function HomePage() {
                   <Sparkles className="h-6 w-6 text-blue-600" />
                 </div>
                 <CardTitle className="text-xl">Lavagem Completa</CardTitle>
-                <CardDescription>Lavagem externa e interna com aspiração</CardDescription>
+                <CardDescription>
+                  Lavagem externa e interna com aspiração
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 mb-4">
@@ -240,19 +367,21 @@ export default function HomePage() {
                     Aplicação de silicone e cheirinho
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-blue-600">R$ 50</span>
-                </div>
               </CardContent>
             </Card>
 
             <Card className="hover:shadow-lg transition-shadow border-0 shadow-md">
               <CardHeader>
                 <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <FontAwesomeIcon icon={faMotorcycle} className="h-6 w-6 text-blue-600" />
+                  <FontAwesomeIcon
+                    icon={faMotorcycle}
+                    className="h-6 w-6 text-blue-600"
+                  />
                 </div>
                 <CardTitle className="text-xl">Lavagem de Moto</CardTitle>
-                <CardDescription>Proteção e brilho duradouro para sua pintura</CardDescription>
+                <CardDescription>
+                  Proteção e brilho duradouro para sua pintura
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 mb-4">
@@ -269,9 +398,6 @@ export default function HomePage() {
                     Proteção UV
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-blue-600">R$ 20</span>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -279,7 +405,7 @@ export default function HomePage() {
       </section>
 
       {/* Sobre */}
-      <section id="sobre" className="py-20 bg-gray-50">
+      <section id="sobre" className="py-4 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
@@ -290,8 +416,8 @@ export default function HomePage() {
                 Por que escolher o BKM?
               </h2>
               <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0">
-                Com 2 anos de experiência no mercado, o BKM Lava Rápido se destaca pela qualidade dos serviços e
-                atendimento personalizado.
+                Com 2 anos de experiência no mercado, o BKM Lava Rápido se destaca
+                pela qualidade dos serviços e atendimento personalizado.
               </p>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3 text-left">
@@ -330,21 +456,24 @@ export default function HomePage() {
                 alt="Equipe BKM"
                 width={350}
                 height={10}
-                className="rounded-2xl shadow-2xl w-full max-w-[350px] mx-auto md:ml-[20%]" // Responsivo
-                style={{ position: 'relative' }}
+                className="rounded-2xl shadow-2xl w-full max-w-[350px] mx-auto md:ml-[20%]"
+                style={{ position: "relative" }}
               />
             </div>
           </div>
         </div>
       </section>
 
-
       {/* Contato */}
-      <section id="contato" className="py-20 bg-white">
+      <section id="contato" className="py-9 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-100">Entre em Contato</Badge>
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Visite nossa unidade</h2>
+            <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-100">
+              Entre em Contato
+            </Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 py-2">
+              Visite nossa unidade
+            </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Estamos localizados em ponto estratégico para melhor atendê-lo
             </p>
@@ -382,7 +511,9 @@ export default function HomePage() {
                   <br />
                   (11) 98454-0927
                 </p>
-                <Button className="mt-4 bg-blue-600 hover:bg-blue-700">Contate-nos</Button>
+                <Button className="mt-4 bg-blue-600 hover:bg-blue-700">
+                  Contate-nos
+                </Button>
               </CardContent>
             </Card>
 
@@ -397,7 +528,7 @@ export default function HomePage() {
                 <p className="text-gray-600">
                   Terça a Sexta: 8h às 18h
                   <br />
-                  Sábado: 8h às 18h
+                  Sábado: 8h às 17h
                   <br />
                   Domingo: 9h às 15h
                 </p>
@@ -421,7 +552,9 @@ export default function HomePage() {
                   <p className="text-sm text-gray-400">Lava Rápido</p>
                 </div>
               </div>
-              <p className="text-gray-400">Cuidando do seu veículo com qualidade e agilidade desde 2024.</p>
+              <p className="text-gray-400">
+                Cuidando do seu veículo com qualidade e agilidade desde 2024.
+              </p>
             </div>
 
             <div>
@@ -442,11 +575,16 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  Rua Romão José da Silva, 11a
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Rua+Romão+José+da+Silva,+11a"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    Rua Romão José da Silva, 11A
+                  </a>
                 </li>
-                <li>
-                  Ao Lado da Academia Mansão Maromba
-                </li>
+                <li>Ao Lado da Academia Mansão Maromba</li>
               </ul>
             </div>
 
@@ -454,7 +592,7 @@ export default function HomePage() {
               <h4 className="font-semibold mb-4">Horários</h4>
               <ul className="space-y-2 text-gray-400">
                 <li>Ter-Sex: 8h às 18h</li>
-                <li>Sábado: 8h às 18h</li>
+                <li>Sábado: 8h às 17h</li>
                 <li>Domingo: 9h às 15h</li>
               </ul>
             </div>
@@ -463,7 +601,6 @@ export default function HomePage() {
           <div className="text-center mt-8">
             <h4 className="font-semibold mb-4">Siga-nos nas Redes Sociais</h4>
             <div className="flex justify-center space-x-4">
-              {/* Instagram */}
               <a
                 href="https://www.instagram.com/lavarapidobkm?igsh=NXdmdDhpNGx6c3Fp"
                 target="_blank"
@@ -472,8 +609,6 @@ export default function HomePage() {
               >
                 <Instagram className="h-5 w-5 text-white" />
               </a>
-
-              {/* WhatsApp */}
               <a
                 href="https://wa.me/5511968369512"
                 target="_blank"
@@ -487,7 +622,6 @@ export default function HomePage() {
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2025 BKM Lava Rápido. Todos os direitos reservados.</p>
-
             <p className="mt-4 text-sm flex items-center justify-center">
               Desenvolvido por
               <a
@@ -505,9 +639,8 @@ export default function HomePage() {
               </a>
             </p>
           </div>
-
         </div>
       </footer>
     </div>
-  )
+  );
 }
